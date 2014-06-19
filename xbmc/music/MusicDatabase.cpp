@@ -59,7 +59,6 @@
 #include "utils/LegacyPathTranslation.h"
 #include "utils/log.h"
 #include "TextureCache.h"
-#include "utils/AutoPtrHandle.h"
 #include "interfaces/AnnouncementManager.h"
 #include "dbwrappers/dataset.h"
 #include "utils/XMLUtils.h"
@@ -71,7 +70,6 @@
 #include <utility>
 
 using namespace std;
-using namespace AUTOPTR;
 using namespace XFILE;
 using namespace MUSICDATABASEDIRECTORY;
 using ADDON::AddonPtr;
