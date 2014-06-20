@@ -61,6 +61,9 @@
 #include "guiinfo/GUIInfoLabels.h"
 #include "cores/AudioEngine/DSPAddons/ActiveAEDSP.h"
 
+#ifdef TARGET_POSIX
+#include "linux/XTimeUtils.h"
+#endif
 
 using namespace std;
 using namespace XFILE;
