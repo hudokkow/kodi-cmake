@@ -30,6 +30,7 @@
 #include "PartyModeManager.h"
 #include "music/MusicDatabase.h"
 #include "guilib/GUIWindowManager.h"
+#include "dialogs/GUIDialogContextMenu.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "filesystem/Directory.h"
 #include "FileItem.h"

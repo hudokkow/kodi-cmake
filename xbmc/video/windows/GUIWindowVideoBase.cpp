@@ -63,6 +63,7 @@
 #include "URL.h"
 #include "utils/GroupUtils.h"
 #include "TextureDatabase.h"
+#include "dialogs/GUIDialogContextMenu.h"
 
 using namespace XFILE;
 using namespace PLAYLIST;
