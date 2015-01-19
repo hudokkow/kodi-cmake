@@ -85,7 +85,7 @@ namespace XBMCAddon
       return pDialog->IsConfirmed();
     }
 
-    Alternative<int, std::vector<String> > Dialog::select(const String& heading, const std::vector<String>& list, int autoclose, bool multi)
+    Alternative<int, std::vector<int> > Dialog::select(const String& heading, const std::vector<String>& list, int autoclose, bool multi)
     {
       DelayedCallGuard dcguard(languageHook);
       CGUIDialogSelect* pDialog= (CGUIDialogSelect*)g_windowManager.GetWindow(WINDOW_DIALOG_SELECT);
@@ -109,12 +109,14 @@ namespace XBMCAddon
 
       //send message and wait for user input
       XBMCWaitForThreadMessage(TMSG_DIALOG_DOMODAL, window, ACTIVE_WINDOW);
-      Alternative<int, std::vector<String> > ret;
+      Alternative<int, std::vector<int> > ret;
       if (multi)
       {
         const CFileItemList& items = pDialog->GetSelectedItems();
         for (int i=0;i<items.Size();++i)
-          ret.later().push_back(items[i]->GetLabel());
+          for (size_t j=0;j<list.size();++i)
+            if (items[i]->GetLabel() == list[j])
+              ret.later().push_back(j);
       }
       else
         ret.former() = pDialog->GetSelectedLabel();
