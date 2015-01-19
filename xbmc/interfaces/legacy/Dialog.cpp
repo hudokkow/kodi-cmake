@@ -36,6 +36,7 @@
 #include "messaging/ApplicationMessenger.h"
 #include "Dialog.h"
 #include "FileItem.h"
+
 #ifdef TARGET_POSIX
 #include "linux/XTimeUtils.h"
 #endif
@@ -85,7 +86,7 @@ namespace XBMCAddon
       return pDialog->IsConfirmed();
     }
 
-    Alternative<int, std::vector<int> > Dialog::select(const String& heading, const std::vector<String>& list, int autoclose, bool multi)
+    int Dialog::select(const String& heading, const std::vector<String>& list, int autoclose)
     {
       DelayedCallGuard dcguard(languageHook);
       CGUIDialogSelect* pDialog= (CGUIDialogSelect*)g_windowManager.GetWindow(WINDOW_DIALOG_SELECT);
@@ -105,21 +106,44 @@ namespace XBMCAddon
       if (autoclose > 0)
         pDialog->SetAutoClose(autoclose);
 
-      pDialog->SetMultiSelection(multi);
+      pDialog->SetMultiSelection(false);
 
-      //send message and wait for user input
-      XBMCWaitForThreadMessage(TMSG_DIALOG_DOMODAL, window, ACTIVE_WINDOW);
-      Alternative<int, std::vector<int> > ret;
-      if (multi)
+      pDialog->Open();
+
+      return pDialog->GetSelectedLabel();
+    }
+
+    std::vector<int> Dialog::multiSelect(const String& heading, const std::vector<String>& list, int autoclose)
+    {
+      DelayedCallGuard dcguard(languageHook);
+      const int window = WINDOW_DIALOG_SELECT;
+      CGUIDialogSelect* pDialog= (CGUIDialogSelect*)g_windowManager.GetWindow(window);
+      if (pDialog == NULL)
+        throw WindowException("Error: Window is NULL, this is not possible :-)");
+
+      pDialog->Reset();
+      if (!heading.empty())
+        pDialog->SetHeading(heading);
+
+      String listLine;
+      for(unsigned int i = 0; i < list.size(); i++)
       {
-        const CFileItemList& items = pDialog->GetSelectedItems();
-        for (int i=0;i<items.Size();++i)
-          for (size_t j=0;j<list.size();++i)
-            if (items[i]->GetLabel() == list[j])
-              ret.later().push_back(j);
+        listLine = list[i];
+        pDialog->Add(listLine);
       }
-      else
-        ret.former() = pDialog->GetSelectedLabel();
+      if (autoclose > 0)
+        pDialog->SetAutoClose(autoclose);
+
+      pDialog->SetMultiSelection(true);
+
+      pDialog->Open();
+
+      std::vector<int> ret;
+      const CFileItemList& items = pDialog->GetSelectedItems();
+      for (int i=0;i<items.Size();++i)
+        for (size_t j=0;j<list.size();++i)
+          if (items[i]->GetLabel() == list[j])
+            ret.push_back(j);
 
       return ret;
     }
