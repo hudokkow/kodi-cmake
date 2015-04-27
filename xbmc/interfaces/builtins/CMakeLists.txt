@@ -1,5 +1,6 @@
 set(SOURCES AddonBuiltins.cpp
             Builtins.cpp
+            CECBuiltins.cpp
             GUIBuiltins.cpp
             GUIControlBuiltins.cpp
             LibraryBuiltins.cpp
