@@ -1,5 +1,6 @@
 set(SOURCES AddonBuiltins.cpp
             Builtins.cpp
+            GUIBuiltins.cpp
             LibraryBuiltins.cpp
             ProfileBuiltins.cpp
             SkinBuiltins.cpp
