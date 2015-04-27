@@ -53,7 +53,7 @@ static int Action(const std::vector<std::string>& params)
   if (CButtonTranslator::TranslateActionString(params[0].c_str(), actionID))
   {
     int windowID = params.size() == 2 ? CButtonTranslator::TranslateWindow(params[1]) : WINDOW_INVALID;
-    CApplicationMessenger::Get().SendAction(CAction(actionID), windowID);
+    CApplicationMessenger::Get().SendMsg(TMSG_GUI_ACTION, windowID, -1, static_cast<void*>(new CAction(actionID)));
   }
 
   return 0;
@@ -390,7 +390,7 @@ static int SetStereoMode(const std::vector<std::string>& params)
 {
   CAction action = CStereoscopicsManager::Get().ConvertActionCommandToAction("SetStereoMode", params[0]);
   if (action.GetID() != ACTION_NONE)
-    CApplicationMessenger::Get().SendAction(action);
+    CApplicationMessenger::Get().SendMsg(TMSG_GUI_ACTION, WINDOW_INVALID, -1, static_cast<void*>(new CAction(action)));
   else
   {
     CLog::Log(LOGERROR,"Builtin 'SetStereoMode' called with unknown parameter: %s", params[0].c_str());
