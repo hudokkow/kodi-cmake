@@ -6,6 +6,7 @@ set(SOURCES AddonBuiltins.cpp
             GUIContainerBuiltins.cpp
             LibraryBuiltins.cpp
             PictureBuiltins.cpp
+            PlayerBuiltins.cpp
             ProfileBuiltins.cpp
             PVRBuiltins.cpp
             SkinBuiltins.cpp
