@@ -1014,7 +1014,7 @@ bool CGUIMediaWindow::OnClick(int iItem)
     }
     else if (StringUtils::StartsWithNoCase(pItem->GetPath(), "addons://more/"))
     {
-      CBuiltins::Execute("ActivateWindow(AddonBrowser,addons://all/xbmc.addon." + pItem->GetPath().substr(14) + ",return)");
+      CBuiltins::Get().Execute("ActivateWindow(AddonBrowser,addons://all/xbmc.addon." + pItem->GetPath().substr(14) + ",return)");
       return true;
     }
 

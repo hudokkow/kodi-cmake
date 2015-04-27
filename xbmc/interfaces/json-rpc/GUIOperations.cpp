@@ -66,7 +66,7 @@ JSONRPC_STATUS CGUIOperations::ActivateWindow(const std::string &method, ITransp
       cmd += "," + param->asString();
   }
   cmd += ")";
-  CBuiltins::Execute(cmd);
+  CBuiltins::Get().Execute(cmd);
 
   return ACK;
 }

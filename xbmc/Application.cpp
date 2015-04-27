@@ -214,6 +214,10 @@
 #include "utils/AMLUtils.h"
 #endif
 
+#ifdef HAS_SDL
+#include <SDL.h>
+#endif
+
 #include "cores/FFmpeg.h"
 #include "utils/CharsetConverter.h"
 #include "pictures/GUIWindowSlideShow.h"
@@ -2177,10 +2181,10 @@ bool CApplication::OnAction(const CAction &action)
   // built in functions : execute the built-in
   if (action.GetID() == ACTION_BUILT_IN_FUNCTION)
   {
-    if (!CBuiltins::IsSystemPowerdownCommand(action.GetName()) ||
+    if (!CBuiltins::Get().IsSystemPowerdownCommand(action.GetName()) ||
         g_PVRManager.CanSystemPowerdown())
     {
-      CBuiltins::Execute(action.GetName());
+      CBuiltins::Get().Execute(action.GetName());
       m_navigationTimer.StartZero();
     }
     return true;
@@ -2660,7 +2664,7 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
     break;
 
   case TMSG_EXECUTE_BUILT_IN:
-    CBuiltins::Execute(pMsg->strParam.c_str());
+    CBuiltins::Get().Execute(pMsg->strParam.c_str());
     break;
 
   case TMSG_PICTURE_SHOW:
@@ -4445,11 +4449,11 @@ bool CApplication::ExecuteXBMCAction(std::string actionStr)
   actionStr = CGUIInfoLabel::GetLabel(actionStr);
 
   // user has asked for something to be executed
-  if (CBuiltins::HasCommand(actionStr))
+  if (CBuiltins::Get().HasCommand(actionStr))
   {
-    if (!CBuiltins::IsSystemPowerdownCommand(actionStr) ||
+    if (!CBuiltins::Get().IsSystemPowerdownCommand(actionStr) ||
         g_PVRManager.CanSystemPowerdown())
-      CBuiltins::Execute(actionStr);
+      CBuiltins::Get().Execute(actionStr);
   }
   else
   {
