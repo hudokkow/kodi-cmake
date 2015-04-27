@@ -5,6 +5,7 @@ set(SOURCES AddonBuiltins.cpp
             GUIControlBuiltins.cpp
             GUIContainerBuiltins.cpp
             LibraryBuiltins.cpp
+            PictureBuiltins.cpp
             ProfileBuiltins.cpp
             PVRBuiltins.cpp
             SkinBuiltins.cpp
