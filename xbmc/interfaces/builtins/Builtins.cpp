@@ -105,6 +105,8 @@
 #include "powermanagement/PowerManager.h"
 #include "filesystem/Directory.h"
 
+#include "LibraryBuiltins.h"
+
 using namespace std;
 using namespace XFILE;
 using namespace ADDON;
@@ -191,9 +193,6 @@ const BUILT_IN commands[] = {
   { "System.ExecWait",            true,   "Execute shell commands and freezes Kodi until shell is closed" },
   { "Resolution",                 true,   "Change Kodi's Resolution" },
   { "SetFocus",                   true,   "Change current focus to a different control id" },
-  { "UpdateLibrary",              true,   "Update the selected library (music or video)" },
-  { "CleanLibrary",               true,   "Clean the video/music library" },
-  { "ExportLibrary",              true,   "Export the video/music library" },
   { "PageDown",                   true,   "Send a page down event to the pagecontrol with given id" },
   { "PageUp",                     true,   "Send a page up event to the pagecontrol with given id" },
   { "Container.Refresh",          false,  "Refresh current listing" },
@@ -232,7 +231,6 @@ const BUILT_IN commands[] = {
   { "LIRC.Start",                 false,  "Adds Kodi as LIRC client" },
   { "LIRC.Send",                  true,   "Sends a command to LIRC" },
 #endif
-  { "VideoLibrary.Search",        false,  "Brings up a search dialog which will search the library" },
   { "ToggleDebug",                false,  "Enables/disables debug mode" },
   { "StartPVRManager",            false,  "(Re)Starts the PVR manager (Deprecated)" },
   { "StopPVRManager",             false,  "Stops the PVR manager (Deprecated)" },
@@ -247,6 +245,7 @@ const BUILT_IN commands[] = {
 
 CBuiltins::CBuiltins()
 {
+  RegisterCommands<CLibraryBuiltins>();
 }
 
 CBuiltins::~CBuiltins()
@@ -1578,127 +1577,6 @@ int CBuiltins::Execute(const std::string& execString)
     CGUIMessage message(GUI_MSG_PAGE_UP, g_windowManager.GetFocusedWindow(), id);
     g_windowManager.SendMessage(message);
   }
-  else if (execute == "updatelibrary" && !params.empty())
-  {
-    bool userInitiated = true;
-    if (params.size() > 2)
-      userInitiated = StringUtils::EqualsNoCase(params[2], "true");
-    if (StringUtils::EqualsNoCase(params[0], "music"))
-    {
-      if (g_application.IsMusicScanning())
-        g_application.StopMusicScan();
-      else
-        g_application.StartMusicScan(params.size() > 1 ? params[1] : "", userInitiated);
-    }
-    if (StringUtils::EqualsNoCase(params[0], "video"))
-    {
-      if (g_application.IsVideoScanning())
-        g_application.StopVideoScan();
-      else
-        g_application.StartVideoScan(params.size() > 1 ? params[1] : "", userInitiated);
-    }
-  }
-  else if (execute == "cleanlibrary")
-  {
-    bool userInitiated = true;
-    if (params.size() > 1)
-      userInitiated = StringUtils::EqualsNoCase(params[1], "true");
-    if (!params.size() || StringUtils::EqualsNoCase(params[0], "video"))
-    {
-      if (!g_application.IsVideoScanning())
-         g_application.StartVideoCleanup(userInitiated);
-      else
-        CLog::Log(LOGERROR, "CleanLibrary is not possible while scanning or cleaning");
-    }
-    else if (StringUtils::EqualsNoCase(params[0], "music"))
-    {
-      if (!g_application.IsMusicScanning())
-        g_application.StartMusicCleanup(userInitiated);
-      else
-        CLog::Log(LOGERROR, "CleanLibrary is not possible while scanning for media info");
-    }
-  }
-  else if (execute == "exportlibrary" && !params.empty())
-  {
-    int iHeading = 647;
-    if (StringUtils::EqualsNoCase(params[0], "music"))
-      iHeading = 20196;
-    std::string path;
-    VECSOURCES shares;
-    g_mediaManager.GetLocalDrives(shares);
-    g_mediaManager.GetNetworkLocations(shares);
-    g_mediaManager.GetRemovableDrives(shares);
-    bool singleFile;
-    bool thumbs=false;
-    bool actorThumbs=false;
-    bool overwrite=false;
-    bool cancelled=false;
-
-    if (params.size() > 1)
-      singleFile = StringUtils::EqualsNoCase(params[1], "true");
-    else
-      singleFile = !CGUIDialogYesNo::ShowAndGetInput(CVariant{iHeading}, CVariant{20426}, cancelled, CVariant{20428}, CVariant{20429});
-
-    if (cancelled)
-        return -1;
-
-    if (singleFile)
-    {
-      if (params.size() > 2)
-        thumbs = StringUtils::EqualsNoCase(params[2], "true");
-      else
-        thumbs = CGUIDialogYesNo::ShowAndGetInput(CVariant{iHeading}, CVariant{20430}, cancelled, CVariant{""}, CVariant{""}, CGUIDialogYesNo::NO_TIMEOUT);
-    }
-
-    if (cancelled)
-      return -1;
-
-    if (thumbs && StringUtils::EqualsNoCase(params[0], "video"))
-    {
-      if (params.size() > 4)
-        actorThumbs = StringUtils::EqualsNoCase(params[4], "true");
-      else
-        actorThumbs = CGUIDialogYesNo::ShowAndGetInput(CVariant{iHeading}, CVariant{20436}, cancelled, CVariant{ "" }, CVariant{ "" }, CGUIDialogYesNo::NO_TIMEOUT);
-    }
-
-    if (cancelled)
-      return -1;
-
-    if (singleFile)
-    {
-      if (params.size() > 3)
-        overwrite = StringUtils::EqualsNoCase(params[3], "true");
-      else
-        overwrite = CGUIDialogYesNo::ShowAndGetInput(CVariant{iHeading}, CVariant{20431}, cancelled, CVariant{ "" }, CVariant{ "" }, CGUIDialogYesNo::NO_TIMEOUT);
-    }
-
-    if (cancelled)
-      return -1;
-
-    if (params.size() > 2)
-      path=params[2];
-    if (singleFile || !path.empty() ||
-        CGUIDialogFileBrowser::ShowAndGetDirectory(shares,
-				  g_localizeStrings.Get(661), path, true))
-    {
-      if (StringUtils::EqualsNoCase(params[0], "video"))
-      {
-        CVideoDatabase videodatabase;
-        videodatabase.Open();
-        videodatabase.ExportToXML(path, singleFile, thumbs, actorThumbs, overwrite);
-        videodatabase.Close();
-      }
-      else
-      {
-        if (URIUtils::HasSlashAtEnd(path))
-          path = URIUtils::AddFileToFolder(path, "musicdb.xml");
-        CMusicDatabase musicdatabase;
-        musicdatabase.Open();
-        musicdatabase.ExportToXML(path, singleFile, thumbs, overwrite);
-        musicdatabase.Close();
-      }
-    }
-  }
   else if (execute == "control.move" && params.size() > 1)
   {
     CGUIMessage message(GUI_MSG_MOVE_OFFSET, g_windowManager.GetFocusedWindow(), atoi(params[0].c_str()), atoi(params[1].c_str()));
@@ -1888,11 +1766,6 @@ int CBuiltins::Execute(const std::string& execString)
   {
     CGUIMessage msg(GUI_MSG_MOVE_OFFSET, 0, 0, 0);
     g_windowManager.SendMessage(msg, WINDOW_WEATHER);
-  }
-  else if (execute == "videolibrary.search")
-  {
-    CGUIMessage msg(GUI_MSG_SEARCH, 0, 0, 0);
-    g_windowManager.SendMessage(msg, WINDOW_VIDEO_NAV);
   }
   else if (execute == "toggledebug")
   {

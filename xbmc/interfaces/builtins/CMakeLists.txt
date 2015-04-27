@@ -1,4 +1,5 @@
-set(SOURCES Builtins.cpp)
+set(SOURCES Builtins.cpp
+            LibraryBuiltins.cpp)
 
 core_add_library(interfaces_builtins)
 add_dependencies(interfaces_builtins libcpluff)
