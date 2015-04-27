@@ -3,6 +3,7 @@ set(SOURCES AddonBuiltins.cpp
             CECBuiltins.cpp
             GUIBuiltins.cpp
             GUIControlBuiltins.cpp
+            GUIContainerBuiltins.cpp
             LibraryBuiltins.cpp
             ProfileBuiltins.cpp
             SkinBuiltins.cpp
