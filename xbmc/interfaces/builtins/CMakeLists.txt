@@ -6,7 +6,8 @@ set(SOURCES AddonBuiltins.cpp
             LibraryBuiltins.cpp
             ProfileBuiltins.cpp
             SkinBuiltins.cpp
-            SystemBuiltins.cpp)
+            SystemBuiltins.cpp
+            WeatherBuiltins.cpp)
 
 core_add_library(interfaces_builtins)
 add_dependencies(interfaces_builtins libcpluff)
