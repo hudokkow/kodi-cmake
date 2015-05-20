@@ -47,7 +47,6 @@
 #define CONTROL_BTNTYPE            5
 #define CONTROL_LABELFILES        12
 
-#define CONTROL_BTNSCAN            9
 #define CONTROL_BTNREC            10
 
 #ifdef HAS_DVD_DRIVE
@@ -89,11 +88,7 @@ bool CGUIWindowMusicSongs::OnMessage(CGUIMessage& message)
     {
       int iControl = message.GetSenderId();
 
-      if (iControl == CONTROL_BTNSCAN)
-      {
-        OnScan(-1);
-      }
-      else if (iControl == CONTROL_BTNREC)
+      if (iControl == CONTROL_BTNREC)
       {
         if (g_application.m_pPlayer->IsPlayingAudio() )
         {
@@ -179,26 +174,6 @@ void CGUIWindowMusicSongs::UpdateButtons()
   {
     SET_CONTROL_LABEL(CONTROL_BTNREC, 264); //Record
     CONTROL_DISABLE(CONTROL_BTNREC);
-  }
-
-  // Disable scan button if shoutcast
-  if (m_vecItems->IsVirtualDirectoryRoot() ||
-      m_vecItems->IsMusicDb())
-  {
-    CONTROL_DISABLE(CONTROL_BTNSCAN);
-  }
-  else
-  {
-    CONTROL_ENABLE(CONTROL_BTNSCAN);
-  }
-
-  if (g_application.IsMusicScanning())
-  {
-    SET_CONTROL_LABEL(CONTROL_BTNSCAN, 14056); // Stop Scan
-  }
-  else
-  {
-    SET_CONTROL_LABEL(CONTROL_BTNSCAN, 102); // Scan
   }
 
   // Update object count label
