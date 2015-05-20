@@ -1413,3 +1413,11 @@ void CGUIWindowMusicBase::OnRemoveSource(int iItem)
     g_infoManager.ResetLibraryBools();
   }
 }
+
+void CGUIWindowMusicBase::OnPrepareFileItems(CFileItemList &items)
+{
+  CGUIMediaWindow::OnPrepareFileItems(items);
+
+  if (!items.IsMusicDb())
+    RetrieveMusicInfo();
+}
