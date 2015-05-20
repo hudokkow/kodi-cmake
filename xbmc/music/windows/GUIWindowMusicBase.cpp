@@ -61,6 +61,7 @@
 #include "music/infoscanner/MusicInfoScanner.h"
 #include "guiinfo/GUIInfoLabels.h"
 #include "cores/AudioEngine/DSPAddons/ActiveAEDSP.h"
+#include "Autorun.h"
 
 #ifdef TARGET_POSIX
 #include "linux/XTimeUtils.h"
@@ -935,6 +936,13 @@ void CGUIWindowMusicBase::PlayItem(int iItem)
   // the current playlist
 
   const CFileItemPtr pItem = m_vecItems->Get(iItem);
+#ifdef HAS_DVD_DRIVE
+  if (pItem->IsDVD())
+  {
+    MEDIA_DETECT::CAutorun::PlayDiscAskResume(pItem->GetPath());
+    return;
+  }
+#endif
 
   // if its a folder, build a playlist
   if ((pItem->m_bIsFolder && !pItem->IsPlugin()) || (g_windowManager.GetActiveWindow() == WINDOW_MUSIC_NAV && pItem->IsPlayList()))
