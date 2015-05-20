@@ -889,6 +889,15 @@ bool CGUIWindowMusicBase::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   if (itemNumber >= 0 && itemNumber < m_vecItems->Size())
     item = m_vecItems->Get(itemNumber);
 
+  if (CGUIDialogContextMenu::OnContextButton("music", item, button))
+  {
+    if (button == CONTEXT_BUTTON_REMOVE_SOURCE)
+      OnRemoveSource(itemNumber);
+
+    Update(m_vecItems->GetPath());
+    return true;
+  }
+
   switch (button)
   {
   case CONTEXT_BUTTON_QUEUE_ITEM:
@@ -976,6 +985,18 @@ bool CGUIWindowMusicBase::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
 
       g_application.PlayFile(resItem, false);
     }
+    break;
+
+  case CONTEXT_BUTTON_RIP_CD:
+    OnRipCD();
+    return true;
+
+#ifdef HAS_CDDA_RIPPER
+  case CONTEXT_BUTTON_CANCEL_RIP_CD:
+    CCDDARipper::GetInstance().CancelJobs();
+    return true;
+#endif
+
 
   default:
     break;
